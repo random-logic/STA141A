@@ -1,0 +1,204 @@
+---
+title: 'STA 141A - Fall 2024 - Homework 1'
+subtitle: 'Instructor: Dr. Akira Horiguchi'
+author: 'Student name: Andrew Jowe; Student ID: 919586453'
+output: pdf_document
+date: "Due date: Oct 04, 2024 at 07:59 PM (PT)"
+---
+
+The assignment must be done in an [R Markdown](https://rmarkdown.rstudio.com) document. The assignment must be submitted by 
+the due date above by uploading two files:
+
+1. a .rmd or .qmd source file in CANVAS;
+2. a .pdf file in GRADESCOPE (if you can knit/compile your .rmd to a  .html file only, please save the created .html file as a .pdf file (by opening the .html file -> print -> save to .pdf)).
+
+Email submissions will not be accepted.
+
+Each answer has to be based on `R` code that shows how the result was obtained. The code has to answer the question or solve the task. For example, if you are asked to find the largest entry of a vector, the code has to return the largest element of the vector. If the code just prints all values of the vector, and you determine the largest element by hand, this will not be accepted as an answer. No points will be given for answers that are not based on `R`. This homework already contains chunks for your solution (you can also create additional chunks for each solution if needed, but it must be clear to which tasks your chunks belong).
+
+There are many possible ways to write `R` code that is needed to answer the questions or do the tasks, but for some of the questions or tasks you might have to use something that has not been discussed during the lectures or the discussion sessions. You will have to come up with a solution on your own. Try to understand what you need to do to complete the task or to answer the question, feel free to  search the Internet for possible solutions, and discuss possible solutions with other students. It is perfectly fine to ask what kind of an approach or a function other students use. However, you are not allowed to share your code or your answers with other students. Everyone has to write the code, do the tasks and answer the questions on their own. 
+
+During the discussion sessions, you may be asked to present and share your solutions.
+
+Good luck!
+
+\newpage
+
+# 1. Vectors and lists (7 points)
+Suppose that we have:
+
++ four types of animals: `cat`, `dog`, `cow`, `squirrel`;
++ four possible colors: `white`, `black`, `brown`, `red`;
++ five possible attributes: `big`, `small`, `angry`, `cute`, `finicky`.
+
+### a) (2 points) Generate three random samples of size `50` from each of the three groups, so that you have a vector containing 50 animals, a vector containing 50 colors and a vector containing 50 attributes. Call the resulting vectors of character strings as: `Animal`, `Color`, `Attribute`.
+```{r}
+# Define categories
+animals <- c("cat", "dog", "cow", "squirrel")
+colors <- c("white", "black", "brown", "red")
+attributes <- c("big", "small", "angry", "cute", "finicky")
+
+# Generate samples
+set.seed(123)
+Animal <- sample(animals, 50, replace = TRUE)
+Color <- sample(colors, 50, replace = TRUE)
+Attribute <- sample(attributes, 50, replace = TRUE)
+
+print(Animal)
+print(Color)
+print(Attribute)
+```
+
+### b) (1 point) By using the `sum()` function and logical operations, compute the number of animals that are cats or dogs.
+```{r}
+cat_or_dog_count <- sum(Animal == "cat" | Animal == "dog")
+cat_or_dog_count
+```
+
+### c) (1 point) Compute the relative frequency of cats, dogs, cows and squirrels in the sample.
+```{r}
+animal_table <- table(Animal)
+relative_frequency <- animal_table / length(Animal)
+relative_frequency
+```
+
+### d) (1 point) Create a contingency table between `Animal` and `Attribute`.
+```{r}
+table(Animal, Attribute)
+```
+
+### e) (2 points) Put the three vectors together in a list of three elements called `mylist`, so that each vector is an element of the list. Use the command `length(mylist[1])` to print the length of the first vector. Is this code actually printing the length of the vector? Explain, and write the correct code to print the length of the first vector of the list.
+
+```{r}
+# Create list
+mylist <- list(Animal = Animal, Color = Color, Attribute = Attribute)
+
+# Incorrect code
+# mylist[1] is a sublist containing the first vector
+# Hence, the length is 1
+length(mylist[1])
+
+# Correct code
+# This returns the length of the first vector 
+length(mylist[[1]])
+
+mylist
+```
+
+\newpage
+
+# 2. Data frames (4 points)
+
+### a) (2 points) Create a data frame `df` with one numeric vector `indices` and two character vectors `firstNames` and `surnames` with length 5, respectively. The vector `indices` consists of randomly chosen values from 1 to 10 (the same values are NOT allowed to appear several times). The entries of `firstNames` are randomly chosen from the names 'Alex', 'Peter', 'Tom' (the same values are allowed to appear several times), and the entries of `surnames` are randomly chosen from the names 'James' and 'Miller' (the same values are allowed to appear several times). 
+```{r}
+set.seed(123)
+
+# Create columns
+indices <- sample(1:10, 5, replace = FALSE) 
+firstNames <- sample(c("Alex", "Peter", "Tom"), 5, replace = TRUE)
+surnames <- sample(c("James", "Miller"), 5, replace = TRUE)
+
+# Create df
+df <- data.frame(indices = indices, firstNames = firstNames, surnames = surnames)
+
+df
+```
+
+### b) (1 point) Select all elements of the data frame `df`, where the value of `indices` is greater than 7. Also, select all elements of the data frame `df`, where `firstNames` is 'Alex'.
+```{r}
+print(subset(df, indices > 7))
+
+print(subset(df, firstNames == "Alex"))
+```
+### c) (1 point) Select all elements of the data frame `df`, where both the value of `firstNames` is 'Tom', and the `surnames` is 'Miller'.
+```{r}
+subset(df, firstNames == "Tom" & surnames == "Miller")
+```
+
+\newpage
+
+# 3. Matrices (7 points)
+
+### a) (2 points) Create two matrices `A`, `B`, with two rows and two columns each, where `A` contains the values 1 to 4, and `B` the values 5 to 8. Further, create a vector consisting of 6 elements which are randomly chosen from the values 1 to 100 (the same values are allowed to appear several times). Based on this vector, define a matrix `C` with 2 rows and 3 columns.
+```{r}
+# Create matrices
+A <- matrix(1:4, nrow = 2, ncol = 2)
+B <- matrix(5:8, nrow = 2, ncol = 2)
+
+# Create vector
+set.seed(123)
+vec <- sample(1:100, 6, replace = TRUE)
+
+# Create matrix from vector
+C <- matrix(vec, nrow = 2, ncol = 3)
+
+print(A)
+print(B)
+print(C)
+```
+
+### b) (1 point) Return the matrices which are obtained by element-wise addition (`+`) and multiplication (`*`) of the matrices `A` and `B`.
+```{r}
+print(A + B)
+
+print(A * B)
+```
+### c) (1 point) Determine the matrix produts of `A` and `B`,  and `B` and `C`. 
+```{r}
+print(A %*% B)
+
+print(B %*% C)
+```
+
+### d) (2 points) Return the values in the 1st row of `A`, in the 2nd row of `B`, in the 1st column of `C`, and in the 1st row and 2nd column of `C`.
+```{r}
+print(A[1, ])
+
+print(B[2, ])
+
+print(C[, 1])
+ 
+print(C[1, 2])
+```
+
+### e) (1 point) Use the `apply()` function to determine the row-wise sum of `C`.
+```{r}
+apply(C, 1, sum)
+```
+
+\newpage
+
+# 4. System of linear equations (2 points + 1 Bonus point)
+Consider the following system of linear equations
+\begin{align*}
+x_1+2x_2+3x_3+2x_4&=3,\\
+2x_1+x_2+2x_3+7x_4&=-1,\\
+x_1+2x_2+x_3+2x_4&=0,\\
+-x_1+3x_2+2x_3+x_4&=6.
+\end{align*}
+
+### a) (2 points) Create the matrix `A` and the vector `y` corresponding to the matrix equation $Ax=y$, where $A\in\mathbb R^{4\times 4}$ and $x,y\in\mathbb R^4$ (Hint: it might be useful to make use of the commands `cbind()` or `rbind()`).
+
+```{r}
+# Create matrix
+A <- rbind(
+  c(1, 2, 3, 2),
+  c(2, 1, 2, 7),
+  c(1, 2, 1, 2),
+  c(-1, 3, 2, 1)
+)
+
+# Create vector
+y <- c(3, -1, 0, 6)
+
+print(A)
+print(y)
+```
+
+### b)* (1 Bonus point) Find the solution of the system of the linear equations by using the `solve()` function.
+
+The solution of $Ax=y$ is
+
+```{r}
+solve(A, y) # x_1, x_2, x_3, x_4
+```

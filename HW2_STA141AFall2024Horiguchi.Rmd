@@ -1,0 +1,193 @@
+---
+title: 'STA 141A - Fall 2024 - Homework 2'
+subtitle: 'Instructor: Dr. Akira Horiguchi'
+author: 'Student name: Andrew Jowe; Student ID: 919586453'
+output: pdf_document
+date: "Due date: F Oct 11, 2024 at 07:59 PM (PT)"
+---
+
+The assignment has to be done in an [R Markdown](https://rmarkdown.rstudio.com) document. The assignment has to be submitted electronically on Canvas by 
+the due date above by uploading two files:
+
+1. a .rmd or .qmd source file in CANVAS;
+2. a .pdf file in GRADESCOPE (if you can knit/compile your .rmd to a  .html file only, please save the created .html file as a .pdf file (by opening the .html file -> print -> save to .pdf)).
+
+Email submissions will not be accepted.
+
+Each answer has to be based on `R` code that shows how the result was obtained. The code has to answer the question or solve the task. For example, if you are asked to find the largest entry of a vector, the code has to return the largest element of the vector. If the code just prints all values of the vector, and you determine the largest element by hand, this will not be accepted as an answer. No points will be given for answers that are not based on `R`. This homework already contains chunks for your solution (you can also create additional chunks for each solution if needed, but it must be clear to which tasks your chunks belong).
+
+There are many possible ways to write `R` code that is needed to answer the questions or do the tasks, but for some of the questions or tasks you might have to use something that has not been discussed during the lectures or the discussion sessions. You will have to come up with a solution on your own. Try to understand what you need to do to complete the task or to answer the question, feel free to  search the Internet for possible solutions, and discuss possible solutions with other students. It is perfectly fine to ask what kind of an approach or a function other students use. However, you are not allowed to share your code or your answers with other students. Everyone has to write the code, do the tasks and answer the questions on their own. 
+
+During the discussion sessions, you may be asked to present and share your solutions.
+
+Good luck!
+
+\newpage
+
+# 1. Data exploration and manipulation (6 points)
+
+### The task is to explore the US census population estimates by county for 2022 from the package `usmap` (load the data frame from `countypop.RData`). The data frame has `3142` rows and `4` variables: `fips` is the 5-digit FIPS code corresponding to the county; `abbr` is the 2-letter state abbreviation; `county` is the full county name; `pop_2022` is the 2022 population estimate (in number of people) for the corresponding county. Each row of the data frame represents a different county or county equivalent. For the sake of simplicity, 'county' stands also for a county equivalent, and District of Columbia for a 'state'. 
+
+### Without creating new functions, and without using `for` loops, answer the following questions (using `dplyr` is allowed). 
+
+### a) (1 point) Remove all the rows that contain at least one `NA`.
+```{r, echo=FALSE}
+library(usmap)
+library(dplyr)
+
+cleaned_data <- countypop %>% filter(complete.cases(.))
+knitr::kable(head(cleaned_data))
+```
+
+### b) (1 point) How many unique county names are there?
+```{r, echo=FALSE}
+unique_counties <- cleaned_data %>% summarise(unique_count = n_distinct(county))
+knitr::kable(unique_counties)
+```
+
+### c) (2 points) In order to answer the following question, you can combine the functions `lapply()`, `split()`, `order()`, and `tail()` (or `head()`): What is the largest county in terms of population of each of the states? 
+```{r, echo=FALSE}
+largest_counties <- cleaned_data %>%
+  split(.$abbr) %>%
+  lapply(function(state_data) {
+    state_data[order(state_data$pop_2022, decreasing = TRUE), ] %>%
+      head(1)
+  }) %>%
+  bind_rows()
+
+knitr::kable(largest_counties)
+```
+
+### d) (2 points) What is the average population of the 100 largest counties in the US?
+```{r, echo=FALSE}
+avg_pop_100_largest <- cleaned_data %>%
+  arrange(desc(pop_2022)) %>%
+  slice_head(n = 100) %>%
+  summarise(average_population = mean(pop_2022))
+
+knitr::kable(avg_pop_100_largest)
+```
+
+\newpage
+
+# 2. Conditional and repetitive execution (8 points + 1 Bonus point)
+
+### a) (2 points) Define `x` as a random number between 1 and 100 (without replacement). By using `if`, `else if` and `else`, return the string "'x' is very small!" if  `x` is smaller than 10, return "'x' is very large!" if `x` is  larger than 90, return "'x' is either small or large!" if `x` is at least 10 and at most 25, or at least 75 and at most 90, and return "'x' is medium sized!" otherwise. 
+```{r, echo=FALSE}
+set.seed(123)
+x = sample(1:100, 1)
+if (x < 10) {
+  print("'x' is very large")
+} else if (x > 90) {
+  print("'x' is either small or large")
+} else if (x >= 10 && x <= 25 || x >= 75 && x <= 90) {
+  print("'x' is medium sized")
+} else {
+  print("'x' is very small")
+}
+```
+
+### b) (2 points) By using a `for` loop calculate $\frac 1 {10}\sum^{12}_{i=3}2^i.$ 
+```{r, echo=FALSE}
+res = 0
+for (i in 3:12) {
+  res = res + 2 ** i
+}
+res = res / 10
+res
+```
+
+### c) (2 points) By using `for` loops calculate $\frac 1 {1000}\sum^{9}_{i=2}\sum^{i}_{j=1}4^{2i-3j}.$ 
+```{r, echo=FALSE}
+res = 0
+for (i in 2:9) {
+  for (j in 1:i) {
+    res = res + 4 ** (2 * i - 3 * j)
+  }
+}
+res = res / 1000
+res
+```
+
+### d) (2 points) Find the bug: The following `for` loop creates a vector that contains the sum of the first `n` numbers. In particular, if you set `n=10`, the `for` loop should return a vector of size `10` containing the values 1, (1+2), (1+2+3), ...., (1+2+3+4+5+6+7+8+9+10). Explain why this `for` loop does not create the desired vector, and write the correct code.
+Sums does not return a vector but rather a number because it is assigning the sum from 1 to i to the sums variable itself, not the actual element in the vector.
+
+```{r, echo=FALSE}
+n=10
+sums=numeric(n)
+for(i in 1:n){
+  sums[i]=sum(1:i)
+}
+
+# Your solution
+sums
+```
+
+### e) (1 Bonus point) Explain the following code in your own words:
+```{r, results=F}
+n=10 # set n to 10
+x=1:(2*n) # create a list from 1 to 20
+while(x[1] < n){ # while the first element is less than n
+    x=x[-1] # remove the first element from the list
+}
+x # print the list = a list from 10 to 20
+```
+
+\newpage
+
+# 3. Examining the data distribution (6 points)
+
+### Go to [UCI Machine learning repository](https://archive.ics.uci.edu/ml/datasets/Wine+Quality) and download the data on the white wine quality. This page contains also the background information on the data. In our analysis, we will only consider the following variables: `pH` (pH level) and `quality` (wine quality with values between 0 and 10).
+
+### a) (2 points) Read the data into `R` and add a new binary variable with value 1 if the quality is greater than 5 (this is considered as `good` wine), and 0 otherwise (this is considered as `bad` wine).
+```{r, echo=FALSE}
+library(dplyr)
+
+wine_data <- read.csv("winequality-white.csv", sep = ";")
+wine_data <- wine_data %>%
+  mutate(good_wine = ifelse(quality > 5, 1, 0))
+
+str(wine_data)
+```
+
+### b) (2 points (4*0.5)) Plot the `pH` values for `good`, `bad` and all wines separately in a 3x1-matrix. In addition, do another plot where you plot all the `pH` values and distinguish by color whether the wine is good or bad.
+```{r, echo=FALSE}
+library(ggplot2)
+
+par(mfrow = c(3, 1))
+plot(wine_data$pH[wine_data$good_wine == 1], main = "pH values for Good Wines", xlab = "Index", ylab = "pH Level")
+plot(wine_data$pH[wine_data$good_wine == 0], main = "pH values for Bad Wines", xlab = "Index", ylab = "pH Level")
+plot(wine_data$pH, main = "pH values for All Wines", xlab = "Index", ylab = "pH Level")
+
+par(mfrow = c(1, 1))
+ggplot(wine_data, aes(x = pH, color = as.factor(good_wine))) +
+  geom_density() +
+  labs(title = "pH values for Good and Bad Wines", x = "pH Level", color = "Wine Type") +
+  scale_color_manual(values = c("red", "blue"), labels = c("Bad Wine", "Good Wine"))
+```
+
+### c) (2 points) Plot histograms of `pH` for `good`, `bad` and all wines in a 3x1-plot-matrix, and add the corresponding fitted normal densities to the plots. Do you observe any differences in the distributions?
+```{r, echo=FALSE}
+par(mfrow = c(3, 1))
+
+hist(wine_data$pH[wine_data$good_wine == 1], probability = TRUE, main = "pH values for Good Wines", xlab = "pH Level")
+lines(density(wine_data$pH[wine_data$good_wine == 1]), col = "blue", lwd = 2)
+
+hist(wine_data$pH[wine_data$good_wine == 0], probability = TRUE, main = "pH values for Bad Wines", xlab = "pH Level")
+lines(density(wine_data$pH[wine_data$good_wine == 0]), col = "red", lwd = 2)
+
+hist(wine_data$pH, probability = TRUE, main = "pH values for All Wines", xlab = "pH Level")
+lines(density(wine_data$pH), col = "green", lwd = 2)
+
+par(mfrow = c(1, 1))
+
+# The PH median is slightly higher for bad wines compared to good wines.
+```
+
+\newpage
+
+# Appendix - Code
+
+```{r echo=TRUE, results='asis'}
+knitr::knit_hooks$set(document = function(x) x)
+```
