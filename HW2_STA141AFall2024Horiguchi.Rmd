@@ -31,7 +31,7 @@ Good luck!
 ### Without creating new functions, and without using `for` loops, answer the following questions (using `dplyr` is allowed). 
 
 ### a) (1 point) Remove all the rows that contain at least one `NA`.
-```{r, echo=FALSE}
+```{r}
 library(usmap)
 library(dplyr)
 
@@ -40,13 +40,13 @@ knitr::kable(head(cleaned_data))
 ```
 
 ### b) (1 point) How many unique county names are there?
-```{r, echo=FALSE}
+```{r}
 unique_counties <- cleaned_data %>% summarise(unique_count = n_distinct(county))
 knitr::kable(unique_counties)
 ```
 
 ### c) (2 points) In order to answer the following question, you can combine the functions `lapply()`, `split()`, `order()`, and `tail()` (or `head()`): What is the largest county in terms of population of each of the states? 
-```{r, echo=FALSE}
+```{r}
 largest_counties <- cleaned_data %>%
   split(.$abbr) %>%
   lapply(function(state_data) {
@@ -59,7 +59,7 @@ knitr::kable(largest_counties)
 ```
 
 ### d) (2 points) What is the average population of the 100 largest counties in the US?
-```{r, echo=FALSE}
+```{r}
 avg_pop_100_largest <- cleaned_data %>%
   arrange(desc(pop_2022)) %>%
   slice_head(n = 100) %>%
@@ -73,22 +73,22 @@ knitr::kable(avg_pop_100_largest)
 # 2. Conditional and repetitive execution (8 points + 1 Bonus point)
 
 ### a) (2 points) Define `x` as a random number between 1 and 100 (without replacement). By using `if`, `else if` and `else`, return the string "'x' is very small!" if  `x` is smaller than 10, return "'x' is very large!" if `x` is  larger than 90, return "'x' is either small or large!" if `x` is at least 10 and at most 25, or at least 75 and at most 90, and return "'x' is medium sized!" otherwise. 
-```{r, echo=FALSE}
+```{r}
 set.seed(123)
 x = sample(1:100, 1)
 if (x < 10) {
-  print("'x' is very large")
+  print("'x' is very small!")
 } else if (x > 90) {
-  print("'x' is either small or large")
+  print("'x' is very large!")
 } else if (x >= 10 && x <= 25 || x >= 75 && x <= 90) {
-  print("'x' is medium sized")
+  print("'x' is either small or large!")
 } else {
-  print("'x' is very small")
+  print("'x' is medium sized!")
 }
 ```
 
 ### b) (2 points) By using a `for` loop calculate $\frac 1 {10}\sum^{12}_{i=3}2^i.$ 
-```{r, echo=FALSE}
+```{r}
 res = 0
 for (i in 3:12) {
   res = res + 2 ** i
@@ -98,7 +98,7 @@ res
 ```
 
 ### c) (2 points) By using `for` loops calculate $\frac 1 {1000}\sum^{9}_{i=2}\sum^{i}_{j=1}4^{2i-3j}.$ 
-```{r, echo=FALSE}
+```{r}
 res = 0
 for (i in 2:9) {
   for (j in 1:i) {
@@ -112,14 +112,13 @@ res
 ### d) (2 points) Find the bug: The following `for` loop creates a vector that contains the sum of the first `n` numbers. In particular, if you set `n=10`, the `for` loop should return a vector of size `10` containing the values 1, (1+2), (1+2+3), ...., (1+2+3+4+5+6+7+8+9+10). Explain why this `for` loop does not create the desired vector, and write the correct code.
 Sums does not return a vector but rather a number because it is assigning the sum from 1 to i to the sums variable itself, not the actual element in the vector.
 
-```{r, echo=FALSE}
+```{r}
 n=10
 sums=numeric(n)
 for(i in 1:n){
   sums[i]=sum(1:i)
 }
 
-# Your solution
 sums
 ```
 
@@ -127,7 +126,8 @@ sums
 ```{r, results=F}
 n=10 # set n to 10
 x=1:(2*n) # create a list from 1 to 20
-while(x[1] < n){ # while the first element is less than n
+# while the first element is less than n
+while(x[1] < n){
     x=x[-1] # remove the first element from the list
 }
 x # print the list = a list from 10 to 20
@@ -140,7 +140,7 @@ x # print the list = a list from 10 to 20
 ### Go to [UCI Machine learning repository](https://archive.ics.uci.edu/ml/datasets/Wine+Quality) and download the data on the white wine quality. This page contains also the background information on the data. In our analysis, we will only consider the following variables: `pH` (pH level) and `quality` (wine quality with values between 0 and 10).
 
 ### a) (2 points) Read the data into `R` and add a new binary variable with value 1 if the quality is greater than 5 (this is considered as `good` wine), and 0 otherwise (this is considered as `bad` wine).
-```{r, echo=FALSE}
+```{r}
 library(dplyr)
 
 wine_data <- read.csv("winequality-white.csv", sep = ";")
@@ -151,37 +151,44 @@ str(wine_data)
 ```
 
 ### b) (2 points (4*0.5)) Plot the `pH` values for `good`, `bad` and all wines separately in a 3x1-matrix. In addition, do another plot where you plot all the `pH` values and distinguish by color whether the wine is good or bad.
-```{r, echo=FALSE}
+```{r}
 library(ggplot2)
 
 par(mfrow = c(3, 1))
-plot(wine_data$pH[wine_data$good_wine == 1], main = "pH values for Good Wines", xlab = "Index", ylab = "pH Level")
-plot(wine_data$pH[wine_data$good_wine == 0], main = "pH values for Bad Wines", xlab = "Index", ylab = "pH Level")
-plot(wine_data$pH, main = "pH values for All Wines", xlab = "Index", ylab = "pH Level")
+plot(wine_data$pH[wine_data$good_wine == 1],
+     main = "pH values for Good Wines", xlab = "Index", ylab = "pH Level")
+plot(wine_data$pH[wine_data$good_wine == 0],
+     main = "pH values for Bad Wines", xlab = "Index", ylab = "pH Level")
+plot(wine_data$pH, main = "pH values for All Wines",
+     xlab = "Index", ylab = "pH Level")
 
 par(mfrow = c(1, 1))
-ggplot(wine_data, aes(x = pH, color = as.factor(good_wine))) +
-  geom_density() +
-  labs(title = "pH values for Good and Bad Wines", x = "pH Level", color = "Wine Type") +
-  scale_color_manual(values = c("red", "blue"), labels = c("Bad Wine", "Good Wine"))
+plot(wine_data$pH, 
+     main = "pH values for All Wines", 
+     xlab = "Index", 
+     ylab = "pH Level", 
+     col = ifelse(wine_data$good_wine, "green", "red"))
 ```
 
 ### c) (2 points) Plot histograms of `pH` for `good`, `bad` and all wines in a 3x1-plot-matrix, and add the corresponding fitted normal densities to the plots. Do you observe any differences in the distributions?
-```{r, echo=FALSE}
+```{r}
 par(mfrow = c(3, 1))
 
-hist(wine_data$pH[wine_data$good_wine == 1], probability = TRUE, main = "pH values for Good Wines", xlab = "pH Level")
+hist(wine_data$pH[wine_data$good_wine == 1],
+     probability = TRUE, main = "pH values for Good Wines", xlab = "pH Level")
 lines(density(wine_data$pH[wine_data$good_wine == 1]), col = "blue", lwd = 2)
 
-hist(wine_data$pH[wine_data$good_wine == 0], probability = TRUE, main = "pH values for Bad Wines", xlab = "pH Level")
+hist(wine_data$pH[wine_data$good_wine == 0],
+     probability = TRUE, main = "pH values for Bad Wines", xlab = "pH Level")
 lines(density(wine_data$pH[wine_data$good_wine == 0]), col = "red", lwd = 2)
 
-hist(wine_data$pH, probability = TRUE, main = "pH values for All Wines", xlab = "pH Level")
+hist(wine_data$pH, probability = TRUE,
+     main = "pH values for All Wines", xlab = "pH Level")
 lines(density(wine_data$pH), col = "green", lwd = 2)
 
 par(mfrow = c(1, 1))
 
-# The PH median is slightly higher for bad wines compared to good wines.
+# There are no differences in the distributions, at least from the human eyes.
 ```
 
 \newpage
