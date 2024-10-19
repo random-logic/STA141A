@@ -1,7 +1,7 @@
 ---
 title: 'STA 141A - Fall 2024 - Homework 3'
 subtitle: 'Instructor: Dr. Akira Horiguchi'
-author: 'Student name: ABCDE FGHIJ; Student ID: 123456789'
+author: 'Student name: Andrew Jowe; Student ID: 919586453'
 output: pdf_document
 date: "Due date: Oct 18, 2024 at 07:59 PM (PT)"
 ---
