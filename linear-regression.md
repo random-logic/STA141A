@@ -48,7 +48,7 @@ $$
 
 # Ordinary Least Squares (OLS)
 * Residual is difference between response and predicted value, OLS minimizes this
-$$\hat\beta_{OLS} = (X^TX)^{-1}X^Ty,\ \exist (X^TX)^{-1}$$
+$$\hat\beta_{OLS} = (X^TX)^{-1}X^Ty,\ \exists (X^TX)^{-1}$$
 
 # 1. Find if exists relationship between response and predictors
 ## F-statistic
